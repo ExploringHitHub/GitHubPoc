@@ -3,7 +3,7 @@ on:
     push:
 jobs:
   default:
-     working-directory: 04-using-actions/react-app
+   working-directory: "04-using-actions/react-app"
     build:
      runs-on: ubuntu-latest
      steps:
