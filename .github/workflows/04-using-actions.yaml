@@ -17,6 +17,7 @@ jobs:
           run: npm ci
 
         - name: Run Unit Test
+          shell: bash
           run: npm run test
 
 
