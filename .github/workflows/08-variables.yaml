@@ -41,5 +41,5 @@ jobs:
         steps:
          - name: print Prod variables
            run: |
-             echo "TARGET_VAR :: $ {{vars.TARGET_VAR}}"
-               echo "OVERWRITTEN_VAR:: $ {{vars.OVERWRITTEN_VAR}}"    
+             echo "TARGET_VAR :: ${{vars.TARGET_VAR}}"
+               echo "OVERWRITTEN_VAR:: ${{vars.OVERWRITTEN_VAR}}"    
