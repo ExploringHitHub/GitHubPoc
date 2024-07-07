@@ -1,6 +1,7 @@
 name: 05 - 1 - Event Filters and Activity Types
 on:
-    pull_request:
+    #pull_request:
+    workflow_dispatch:
         types: [opened ,synchronize]
         branches:
             - develop
