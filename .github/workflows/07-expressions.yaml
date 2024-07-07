@@ -2,9 +2,9 @@ name: 07 - Using Expressions
 run-name: 07 - Using Expressions | Debug - ${{ inputs.Debug}}
 on:
     push:
-    workflow-dispatch:
-        branches:
-            - main
+    workflow_dispatch:
+        branches :
+             - main
         inputs:
             Debug:
                 type: boolean
@@ -13,15 +13,15 @@ jobs:
     echo Workflow:
         runs-on: ubuntu-latest
         steps:
-            - name: [debug] Print start-up data
+            - name: Print start-up data
               if: inputs.Debug == true
               run: |
                 echo "Triggered by: ${{ github.event_name}}"
-                echo "Branch: ${{ github.branch}}"
+                #echo "Branch: ${{ github.branch}}"
                 echo "Commit SHA: ${{ github.SHA}}"
                 echo "Runner OS: ${{github.RUNNER_OS}}"
 
-            - name: [debug] Print when triggered from main
+            - name: Print when triggered from main
               if : ${{ github.event_name}} == 'push'
               run: |
                 echo "I was triggered from main"
