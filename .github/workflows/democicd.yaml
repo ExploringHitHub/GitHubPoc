@@ -1,0 +1,38 @@
+name: DemoCICD Pipeline
+on:
+  push:
+    branches:
+     - feature/*
+     - develop
+     - main
+jobs:
+    configuring_Environment:
+        runs-on: ubuntu-latest
+        steps:
+            # Checkout the source code
+            - name: 'Checkout source code'
+              uses: actions/checkout@v4
+
+            - name: Set up Nodejs
+              uses: actions/setup-node@v4
+              with:
+                node-version: '20.x'
+                run : |
+                 echo "node version: $(node --version)" && \
+                 echo "npm version: $(npm --version)"
+          
+            - name: Install dependencies
+              run: |
+               npm install
+               npm ci
+
+            - name: Install PMD
+              run: |
+                PMD_VERSION=`cat pmd/pmd-version.txt`
+                wget https://github.com/pmd/pmd/releases/download/pmd_releases%2F$PMD_VERSION/pmd-bin-$PMD_VERSION.zip
+                unzip pmd-bin-$PMD_VERSION.zip -d ~
+                mv ~/pmd-bin-$PMD_VERSION ~/pmd
+                ~/pmd/bin/run.sh pmd --version
+
+            - name: 'Run PMD scan'
+              run: ~/pmd/bin/run.sh pmd -d force-app -R pmd/ruleset.xml -f text
