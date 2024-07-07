@@ -1,5 +1,5 @@
 name: 06 - Contexts
-run-name: My custom workflow name is 06 - Contexts | Debug: ${{ inputs.Debug}}
+run-name: 06 - Contexts | Debug - ${{inputs.Debug}}
 on:
     push:
     workflow_dispatch:
