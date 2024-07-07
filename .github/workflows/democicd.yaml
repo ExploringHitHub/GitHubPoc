@@ -16,15 +16,13 @@ jobs:
             - name: Set up Nodejs
               uses: actions/setup-node@v4
               with:
-                node-version: '20.x'
-                run : |
-                 echo "node version: $(node --version)" && \
-                 echo "npm version: $(npm --version)"
-          
+                node-version: '20.x'                   
             - name: Install dependencies
               run: |
                npm install
                npm ci
+               echo "node version: $(node --version)" && \
+               echo "npm version: $(npm --version)"
 
             - name: Install PMD
               run: |
