@@ -1,6 +1,6 @@
-public class demoOrg
+public class demopoc
 {
-    public demoOrg()
+    public demopoc()
     {
         system.System.debug('hello');
     }
