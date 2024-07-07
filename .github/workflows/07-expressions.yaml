@@ -3,10 +3,10 @@ run-name: 07 - Using Expressions | Debug - ${{ inputs.Debug}}
 on:
     push:
     workflow_dispatch:
-            inputs:
-                Debug:
-                    type: boolean
-                    default: false
+           inputs:
+            Debug:
+                type: boolean
+                default: false
 jobs:
     echo_Workflow:
         runs-on: ubuntu-latest
