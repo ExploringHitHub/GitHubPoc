@@ -59,6 +59,17 @@ jobs:
                 
                 sfdx force:auth:sfdxurl:store -f ./authFile.txt -a target_poc -s
                 sfdx force:org:display
+                
+            - name: Validation of the checkout code against the target Org(Salesforce)
+              run: |
+                  ls -ltr
+                  sfdx force:source:deploy -c -p force-app -u target_poc
+                  if [ $? -eq 0 ] 
+                  then
+                  echo "Validation is successful,Proceeding with deployment"
+                  else
+                  echo "Validation failed"
+                  fi
             
             
                 
