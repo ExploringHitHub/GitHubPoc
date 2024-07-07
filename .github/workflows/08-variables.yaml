@@ -34,5 +34,12 @@ jobs:
            - name: Print Variable
              run: |
                echo "Repository Varible -> ${{vars.OVERWRITTEN_VAR}}}}"
-               echo "Repository OVERWRITTEN_VAR Varible -> ${{vars.ORG_VAR}}"    
-  
+               echo "Repository OVERWRITTEN_VAR Varible -> ${{vars.ORG_VAR}}"
+    echo_prod:
+        runs-on: ubuntu-latest
+        environment: prod
+        steps:
+         - name: print Prod variables
+           run: |
+             echo "TARGET_VAR :: $ {{vars.TARGET_VAR}}"
+               echo "OVERWRITTEN_VAR:: $ {{vars.OVERWRITTEN_VAR}}"    
