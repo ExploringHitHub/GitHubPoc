@@ -41,27 +41,23 @@ jobs:
 
             - name: 'Run PMD scan'
               run: ~/pmd/bin/run.sh pmd -d force-app -R pmd/ruleset.xml -f text
-
-    Authentication_with_Salesforce:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Authentication with Dev Environment
+              
+            # Install Salesforce CLI
+            - name: 'Install Salesforce CLI'
               run: |
-                echo " ${{ secrets.SFDX_AUTH_URL }} > ./authFile.txt"
+                  wget https://developer.salesforce.com/media/salesforce-cli/sfdx/channels/stable/sfdx-linux-x64.tar.xz
+                  mkdir ~/sfdx
+                  tar xJf sfdx-linux-x64.tar.xz -C ~/sfdx --strip-components 1
+                  echo "$HOME/sfdx/bin" >> $GITHUB_PATH
+                  ~/sfdx/bin/sfdx version
+                  
+            - name: Authentication with Dev Environment
+              shell: bash
+              run: |
+                echo ${{secrets.sfdxurl}} > ./authFile.txt
+                
                 sfdx force:auth:sfdxurl:store -f ./authFile.txt --setalias target_poc -s
                 sfdx force:org:display
             
-            - name: Validation of the checkout code against the target Org(Salesforce)
-              run: |
-                ls -ltr
-                sfdx force:source:deploy -c -p force-app -u target_poc
-                if [ $? -eq 0 ] 
-                then
-                echo "Validation is successful,Proceeding with deployment"
-                else
-                echo "Validation failed"
-                fi
-            - name: Deployment to target Org
-              run: |
-               ls -lrt
+            
                 
