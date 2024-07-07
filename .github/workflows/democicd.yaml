@@ -45,11 +45,11 @@ jobs:
     Authentication_with_Salesforce:
         runs-on: ubuntu-latest
         steps:
-            - name: Authentication with the Dev Environment
+            - name: Authentication with Dev Environment
               run: |
-                     echo ${{ secrets.SFDX_AUTH_URL }} > ./authFile.txt
-                     sfdx force:auth:sfdxurl:store -f ./authFile.txt --setalias target_poc -s
-                     sfdx force:org:display
+                echo " ${{ secrets.SFDX_AUTH_URL }} > ./authFile.txt"
+                sfdx force:auth:sfdxurl:store -f ./authFile.txt --setalias target_poc -s
+                sfdx force:org:display
             
             - name: Validation of the checkout code against the target Org(Salesforce)
               run: |
