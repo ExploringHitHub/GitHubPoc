@@ -41,3 +41,27 @@ jobs:
 
             - name: 'Run PMD scan'
               run: ~/pmd/bin/run.sh pmd -d force-app -R pmd/ruleset.xml -f text
+
+    Authentication_with_Salesforce:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Authentication with the Dev Environment
+              run: |
+                     echo ${{ secrets.SFDX_AUTH_URL }} > ./authFile.txt
+                     sfdx force:auth:sfdxurl:store -f ./authFile.txt --setalias target_poc -s
+                     sfdx force:org:display
+            
+            - name: Validation of the checkout code against the target Org(Salesforce)
+              run: |
+                ls -ltr
+                sfdx force:source:deploy -c -p force-app -u target_poc
+                if [ $? -eq 0 ] 
+                then
+                echo "Validation is successful,Proceeding with deployment"
+                else
+                echo "Validation failed"
+                fi
+            - name: Deployment to target Org
+              run: |
+               ls -lrt
+                
