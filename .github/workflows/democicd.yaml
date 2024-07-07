@@ -21,8 +21,8 @@ jobs:
               run: |
                npm install
                npm ci
-               echo "node version: $(node --version)" && \
-               echo "npm version: $(npm --version)"
+               echo "node version: ${{node --version}}"
+               echo "npm version: ${{npm --version}}"
 
             - name: Install PMD
               run: |
