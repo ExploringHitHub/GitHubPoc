@@ -13,36 +13,7 @@ jobs:
     configuring_Environment:
         runs-on: ubuntu-latest
         steps:
-        # SFDX-Git-Delta
-            - name: Install plugins
-              run: |
-                echo y | sfdx plugins:install sfdx-git-delta
-                sfdx plugins
-
-        #Checkout the source code -- full repository checkout
-            - name: 'Checkout source code'
-              uses: actions/checkout@v4
-              with:
-                fetch-depth: 0
-
-            #Checkout the delta component change 
-            - name: "Delta deploy"
-              run: |
-                sfdx sgd:source:delta --to "HEAD" --from "HEAD~1" --output "." -i .forceignore
-                echo "--- package.xml generated with added and modified metadata ---"
-                cat package/package.xml
-                echo
-                echo "--- Apex Tests to be executed ---"
-                export APEX_CLASSES=$(xq . < package/package.xml | jq '.Package.types | [.] | flatten | map(select(.name=="ApexClass")) | .[] | .members | [.] | flatten | map(select(. | index("*") | not)) | unique | join(",")' -r)
-                echo $APEX_CLASSES
-                echo
-                echo "--- Delta Deploy ---"
-                if [ -z "$APEX_CLASSES" ]; then
-                    sfdx force:source:deploy -x package/package.xml -w 30
-                else
-                    sfdx force:source:deploy -x package/package.xml -w 30 -l RunSpecifiedTests -r "$APEX_CLASSES"
-                fi
-
+         
             - name: Set up Nodejs
               id: setup-node
               uses: actions/setup-node@v2
@@ -60,7 +31,43 @@ jobs:
               run: |
                npm install
                npm ci
-               
+
+            # Install Salesforce CLI
+            - name: 'Install Salesforce CLI'
+              run: |
+                  wget https://developer.salesforce.com/media/salesforce-cli/sfdx/channels/stable/sfdx-linux-x64.tar.xz
+                  mkdir ~/sfdx
+                  tar xJf sfdx-linux-x64.tar.xz -C ~/sfdx --strip-components 1
+                  echo "$HOME/sfdx/bin" >> $GITHUB_PATH
+                  ~/sfdx/bin/sfdx  # SFDX-Git-Delta
+                  - name: Install plugins
+                    run: |
+                      echo y | sfdx plugins:install sfdx-git-delta
+                      sfdx plugins
+      
+        #Checkout the source code -- full repository checkout
+            - name: 'Checkout source code'
+              uses: actions/checkout@v4
+              with:
+                fetch-depth: 0
+      
+        #Checkout the delta component change 
+            - name: "Delta deploy"
+              run: |
+                sfdx sgd:source:delta --to "HEAD" --from "HEAD~1" --output "." -i .forceignore
+                echo "--- package.xml generated with added and modified metadata ---"
+                cat package/package.xml
+                echo
+                echo "--- Apex Tests to be executed ---"
+                export APEX_CLASSES=$(xq . < package/package.xml | jq '.Package.types | [.] | flatten | map(select(.name=="ApexClass")) | .[] | .members | [.] | flatten | map(select(. | index("*") | not)) | unique | join(",")' -r)
+                echo $APEX_CLASSES
+                echo
+                echo "--- Delta Deploy ---"
+                if [ -z "$APEX_CLASSES" ]; then
+                   sfdx force:source:deploy -x package/package.xml -w 30
+                else
+                   sfdx force:source:deploy -x package/package.xml -w 30 -l RunSpecifiedTests -r "$APEX_CLASSES"
+                fi
             - name: Install PMD
               run: |
                 PMD_VERSION=`cat pmd/pmd-version.txt`
@@ -71,15 +78,6 @@ jobs:
 
             - name: 'Run PMD scan'
               run: ~/pmd/bin/run.sh pmd -d force-app -R pmd/ruleset.xml -f text
-              
-            # Install Salesforce CLI
-            - name: 'Install Salesforce CLI'
-              run: |
-                  wget https://developer.salesforce.com/media/salesforce-cli/sfdx/channels/stable/sfdx-linux-x64.tar.xz
-                  mkdir ~/sfdx
-                  tar xJf sfdx-linux-x64.tar.xz -C ~/sfdx --strip-components 1
-                  echo "$HOME/sfdx/bin" >> $GITHUB_PATH
-                  ~/sfdx/bin/sfdx version
 
             - name: Authentication with Dev Environment
               shell: bash
