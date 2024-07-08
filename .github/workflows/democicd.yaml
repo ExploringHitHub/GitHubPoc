@@ -2,12 +2,11 @@ name: DemoCICD Pipeline
 on:
   push:
   workflow_dispatch:  
-    branches:
-     - feature/*
-     - develop
-     - main
-     paths:
-        - 'force-app/**'
+     branches:
+       - feature/*
+       - develop*
+       - main
+   
 jobs:
     configuring_Environment:
         runs-on: ubuntu-latest
