@@ -26,10 +26,10 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-node-${{ steps.setup-node.outputs.node-version }}-modules-${{ hashFiles('package-lock.json') }}
 
-      - name: Install dependencies
-        run: |
-          npm install
-          npm ci
+      #- name: Install dependencies
+      #  run: |
+      #   npm install
+      #   npm ci
 
       # Install Salesforce CLI
       - name: "Install Salesforce CLI"
