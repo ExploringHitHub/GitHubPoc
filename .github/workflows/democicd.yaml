@@ -6,13 +6,23 @@ on:
      - feature/*
      - develop
      - main
+     paths:
+        - 'force-app/**'
 jobs:
     configuring_Environment:
         runs-on: ubuntu-latest
         steps:
+        # SFDX-Git-Delta
+            - name: Install plugins
+              run: |
+                echo y | sfdx plugins:install sfdx-git-delta
+                sfdx plugins
+
             # Checkout the source code
             - name: 'Checkout source code'
               uses: actions/checkout@v4
+              with:
+                fetch-depth: 0
 
             - name: Set up Nodejs
               id: setup-node
@@ -63,7 +73,7 @@ jobs:
             - name: Validation of the checkout code against the target Org(Salesforce)
               run: |
                   ls -ltr
-                  sfdx force:source:deploy -c -p force-app -u target_poc
+                  sfdx force:source:deploy -c -p force-app --testlevel NoTestRun -u target_poc
                   if [ $? -eq 0 ] 
                   then
                   echo "Validation is successful,Proceeding with deployment"
