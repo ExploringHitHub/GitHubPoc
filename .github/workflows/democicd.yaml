@@ -33,3 +33,8 @@ jobs:
           tar xJf sfdx-linux-x64.tar.xz -C ~/sfdx --strip-components 1
           echo "$HOME/sfdx/bin" >> $GITHUB_PATH
           ~/sfdx/bin/sfdx  # SFDX-Git-Delta
+
+      - name: Install plugins
+        run: |
+          echo y | sfdx plugins:install sfdx-git-delta
+          sfdx plugins
