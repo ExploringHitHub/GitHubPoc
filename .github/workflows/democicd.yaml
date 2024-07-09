@@ -27,5 +27,6 @@ jobs:
 
       - name: Install dependencies
         run: |
+          npm init
           npm install
-          npm ci
+          # npm ci
