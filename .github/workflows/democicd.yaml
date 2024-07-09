@@ -18,6 +18,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 20.15.0
+
       - name: Cache dependencies
         id: cache-node-modules
         uses: actions/cache@v2
@@ -33,6 +34,12 @@ jobs:
           tar xJf sfdx-linux-x64.tar.xz -C ~/sfdx --strip-components 1
           echo "$HOME/sfdx/bin" >> $GITHUB_PATH
           ~/sfdx/bin/sfdx  # SFDX-Git-Delta
+
+      #Checkout the source code -- full repository checkout
+      - name: "Checkout source code"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Install plugins
         run: |
