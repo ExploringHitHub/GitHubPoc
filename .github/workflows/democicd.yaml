@@ -18,82 +18,9 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 20.15.0
-
       - name: Cache dependencies
         id: cache-node-modules
         uses: actions/cache@v2
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ steps.setup-node.outputs.node-version }}-modules-${{ hashFiles('package-lock.json') }}
-
-      #- name: Install dependencies
-      #  run: |
-      #   npm install
-      #   npm ci
-
-      # Install Salesforce CLI
-      - name: "Install Salesforce CLI"
-        run: |
-          wget https://developer.salesforce.com/media/salesforce-cli/sfdx/channels/stable/sfdx-linux-x64.tar.xz
-          mkdir ~/sfdx
-          tar xJf sfdx-linux-x64.tar.xz -C ~/sfdx --strip-components 1
-          echo "$HOME/sfdx/bin" >> $GITHUB_PATH
-          ~/sfdx/bin/sfdx  # SFDX-Git-Delta
-
-      - name: Install plugins
-        run: |
-          echo y | sfdx plugins:install sfdx-git-delta
-          sfdx plugins
-
-      #Checkout the source code -- full repository checkout
-      - name: "Checkout source code"
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      #Checkout the delta component change
-      - name: "Delta deploy"
-        run: |
-          sfdx sgd:source:delta --to "HEAD" --from "HEAD~1" --output "." -i .forceignore
-          echo "--- package.xml generated with added and modified metadata ---"
-          cat package/package.xml
-          echo
-          echo "--- Apex Tests to be executed ---"
-          export APEX_CLASSES=$(xq . < package/package.xml | jq '.Package.types | [.] | flatten | map(select(.name=="ApexClass")) | .[] | .members | [.] | flatten | map(select(. | index("*") | not)) | unique | join(",")' -r)
-          echo $APEX_CLASSES
-          echo
-          echo "--- Delta Deploy ---"
-          if [ -z "$APEX_CLASSES" ]; then
-             sfdx force:source:deploy -x package/package.xml -w 30
-          else
-             sfdx force:source:deploy -x package/package.xml -w 30 -l RunSpecifiedTests -r "$APEX_CLASSES"
-          fi
-      - name: Install PMD
-        run: |
-          PMD_VERSION=`cat pmd/pmd-version.txt`
-          wget https://github.com/pmd/pmd/releases/download/pmd_releases%2F$PMD_VERSION/pmd-bin-$PMD_VERSION.zip
-          unzip pmd-bin-$PMD_VERSION.zip -d ~
-          mv ~/pmd-bin-$PMD_VERSION ~/pmd
-          ~/pmd/bin/run.sh pmd --version
-
-      - name: "Run PMD scan"
-        run: ~/pmd/bin/run.sh pmd -d force-app -R pmd/ruleset.xml -f text
-
-      - name: Authentication with Dev Environment
-        shell: bash
-        run: |
-          echo ${{secrets.SFDX_AUTH_URL}} > ./authFile.txt
-
-          sfdx force:auth:sfdxurl:store -f ./authFile.txt -a target_poc -s
-          sfdx force:org:display
-
-      - name: Validation of the checkout code against the target Org(Salesforce)
-        run: |
-          ls -ltr
-          sfdx force:source:deploy -c -p force-app --testlevel NoTestRun -u target_poc
-          if [ $? -eq 0 ] 
-          then
-          echo "Validation is successful,Proceeding with deployment"
-          else
-          echo "Validation failed"
-          fi
