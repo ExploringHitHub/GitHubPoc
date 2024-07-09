@@ -25,8 +25,11 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-node-${{ steps.setup-node.outputs.node-version }}-modules-${{ hashFiles('package-lock.json') }}
 
-      - name: Install dependencies
+      # Install Salesforce CLI
+      - name: "Install Salesforce CLI"
         run: |
-          npm init
-          npm install
-          # npm ci
+          wget https://developer.salesforce.com/media/salesforce-cli/sfdx/channels/stable/sfdx-linux-x64.tar.xz
+          mkdir ~/sfdx
+          tar xJf sfdx-linux-x64.tar.xz -C ~/sfdx --strip-components 1
+          echo "$HOME/sfdx/bin" >> $GITHUB_PATH
+          ~/sfdx/bin/sfdx  # SFDX-Git-Delta
